@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include <cstring>
+#include <fstream>
 
 namespace x86 {
 
@@ -44,6 +45,10 @@ namespace x86 {
 			//汎用レジスタの初期値を全て0にする
 			std::memset(registers, 0, sizeof(registers));
 			this->registers[Register::ESP] = esp;
+		}
+		template<class CharT,class Traits = std::char_traits<CharT>>
+		void Read(std::basic_istream<CharT,Traits>& ifs) {
+			ifs.read(reinterpret_cast<char*>(memory.get()), 512);
 		}
 	};
 }
