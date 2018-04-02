@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <memory>
+#include <cstring>
 
 namespace x86 {
 
@@ -27,9 +29,21 @@ namespace x86 {
 		uint32_t eflags;
 
 		//メモリ(バイト列)
-		uint8_t* memory;
+		std::unique_ptr<uint8_t[]> memory;
 
 		//プログラムカウンタ
 		uint32_t eip;
+
+	public:
+
+		Emulator(size_t size, uint32_t eip, uint32_t esp)
+			:memory(std::make_unique<uint8_t[]>(size)),
+			//レジスタの初期値を指定されたものにする
+			eip(eip)
+		{
+			//汎用レジスタの初期値を全て0にする
+			std::memset(registers, 0, sizeof(registers));
+			this->registers[Register::ESP] = esp;
+		}
 	};
 }
