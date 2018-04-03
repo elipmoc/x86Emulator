@@ -35,15 +35,15 @@ namespace x86 {
 		//プログラムカウンタ
 		uint32_t eip;
 
-		uint32_t getCode8(const int index) {
+		uint32_t getCode8(const int index)const {
 			return memory[eip + index];
 		}
 
-		int32_t getSignCode8(const int index) {
+		int32_t getSignCode8(const int index)const {
 			return static_cast<int8_t>(getCode8(index));
 		}
 
-		uint32_t getCode32(const int index) {
+		uint32_t getCode32(const int index)const {
 			uint32_t ret = 0;
 
 			/* リトルエンディアンでメモリの値を取得する */
