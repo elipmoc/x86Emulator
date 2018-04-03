@@ -54,6 +54,13 @@ namespace x86 {
 			return ret;
 		}
 
+		void mov_r32_imm32() {
+			const uint8_t reg = getCode8(0) - 0xB8;
+			const uint32_t value = getCode32(1);
+			registers[reg] = value;
+			eip += 5;
+		}
+
 	public:
 
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
