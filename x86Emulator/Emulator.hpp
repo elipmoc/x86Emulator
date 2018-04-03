@@ -35,6 +35,25 @@ namespace x86 {
 		//プログラムカウンタ
 		uint32_t eip;
 
+		uint32_t getCode8(const int index) {
+			return memory[eip + index];
+		}
+
+		int32_t getSignCode8(const int index) {
+			return static_cast<int8_t>(getCode8(index));
+		}
+
+		uint32_t getCode32(const int index) {
+			uint32_t ret = 0;
+
+			/* リトルエンディアンでメモリの値を取得する */
+			for (int i = 0; i < 4; i++) {
+				ret |= getCode8(index + i) << (i * 8);
+			}
+
+			return ret;
+		}
+
 	public:
 
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
@@ -46,6 +65,7 @@ namespace x86 {
 			std::memset(registers, 0, sizeof(registers));
 			this->registers[Register::ESP] = esp;
 		}
+
 		template<class CharT,class Traits = std::char_traits<CharT>>
 		void Read(std::basic_istream<CharT,Traits>& ifs) {
 			ifs.read(reinterpret_cast<char*>(memory.get()), 512);
