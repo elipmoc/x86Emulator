@@ -97,6 +97,15 @@ namespace x86 {
 		void Read(std::basic_istream<CharT,Traits>& ifs) {
 			ifs.read(reinterpret_cast<char*>(memory.get()), 512);
 		}
+
+		template<class ByteIterator>
+		void Read(ByteIterator begin, ByteIterator end) {
+			size_t i = 0;
+			for (auto itr = begin; itr != end && i<512; ++itr, i++) {
+				*(memory.get() + i ) = *itr;
+			}
+		}
+
 		template<class Success, class Fail>
 		void exeute(Success success,Fail fail) {
 			while (eip < memorySize) {
