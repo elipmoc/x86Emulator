@@ -3,6 +3,7 @@
 #include <memory>
 #include <cstring>
 #include <fstream>
+#include <functional>
 
 namespace x86 {
 
@@ -35,6 +36,8 @@ namespace x86 {
 		//プログラムカウンタ
 		uint32_t eip;
 
+		std::function<void()> instructions[256];
+
 		uint32_t getCode8(const int index)const {
 			return memory[eip + index];
 		}
@@ -65,6 +68,14 @@ namespace x86 {
 			const int8_t diff = getSignCode8(0);
 			eip += (diff + 2);
 		}
+
+		void InitInstructions() {
+			for (int i = 0; i < 8; i++) {
+				instructions[0xB8 + i] = [this](){this->mov_r32_imm32(); };
+			}
+			instructions[0xEB] = [this]() {this->short_jump(); };
+		}
+
 	public:
 
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
@@ -75,6 +86,8 @@ namespace x86 {
 			//汎用レジスタの初期値を全て0にする
 			std::memset(registers, 0, sizeof(registers));
 			this->registers[Register::ESP] = esp;
+
+			InitInstructions();
 		}
 
 		template<class CharT,class Traits = std::char_traits<CharT>>
