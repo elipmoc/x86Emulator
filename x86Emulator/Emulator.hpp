@@ -38,6 +38,8 @@ namespace x86 {
 
 		std::function<void()> instructions[256];
 
+		const size_t memorySize;
+
 		uint32_t getCode8(const int index)const {
 			return memory[eip + index];
 		}
@@ -81,7 +83,8 @@ namespace x86 {
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
 			:memory(std::make_unique<uint8_t[]>(size)),
 			//レジスタの初期値を指定されたものにする
-			eip(eip)
+			eip(eip),
+			memorySize(size)
 		{
 			//汎用レジスタの初期値を全て0にする
 			std::memset(registers, 0, sizeof(registers));
@@ -93,6 +96,24 @@ namespace x86 {
 		template<class CharT,class Traits = std::char_traits<CharT>>
 		void Read(std::basic_istream<CharT,Traits>& ifs) {
 			ifs.read(reinterpret_cast<char*>(memory.get()), 512);
+		}
+		template<class Success, class Fail>
+		void exeute(Success success,Fail fail) {
+			while (eip < memorySize) {
+				uint8_t code = getCode8(0);
+
+				if (instructions[code] == false) {
+					fail();
+					break;
+				}
+
+				/*命令の実行*/
+				instructions[code]();
+				if (eip == 0x00) {
+					success();
+					break;
+				}
+			}
 		}
 	};
 }
