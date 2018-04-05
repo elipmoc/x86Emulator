@@ -65,7 +65,7 @@ namespace x86 {
 		}
 
 		void short_jump() {
-			const int8_t diff = getSignCode8(0);
+			const int8_t diff = getSignCode8(1);
 			eip += (diff + 2);
 		}
 
