@@ -61,6 +61,10 @@ namespace x86 {
 			eip += 5;
 		}
 
+		void short_jump() {
+			const int8_t diff = getSignCode8(0);
+			eip += (diff + 2);
+		}
 	public:
 
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
