@@ -25,7 +25,6 @@ namespace UnitTest1
 			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
 				//EmulatorÇê∂ê¨
 				x86::Emulator emu(MEMORY_SIZE, 0x0000, 0x7c00);
-				std::vector<uint8_t> code = { 0xb8,0x29,0x00,0x00,0x00,0xeb,0xf9 };
 				auto ifs=file_load_helper("../testAsm/helloworld.bin");
 				emu.Read(ifs);
 				auto success = []() {
