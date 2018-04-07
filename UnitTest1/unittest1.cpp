@@ -3,6 +3,7 @@
 #include "../x86Emulator/Emulator.hpp"
 #include <iostream>
 #include <vector>
+#include <Windows.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -10,6 +11,12 @@ namespace UnitTest1
 {		
 	TEST_CLASS(UnitTest1)
 	{
+
+		std::ifstream file_load_helper(std::string str) {
+			std::ifstream ifs(str, std::ios_base::in | std::ios_base::binary);
+			return ifs;
+		}
+
 	public:
 		
 		TEST_METHOD(TestMethod1)
@@ -19,7 +26,8 @@ namespace UnitTest1
 				//EmulatorÇê∂ê¨
 				x86::Emulator emu(MEMORY_SIZE, 0x0000, 0x7c00);
 				std::vector<uint8_t> code = { 0xb8,0x29,0x00,0x00,0x00,0xeb,0xf9 };
-				emu.Read(code.cbegin(),code.cend());
+				auto ifs=file_load_helper("../testAsm/helloworld.bin");
+				emu.Read(ifs);
 				auto success = []() {
 					Logger::WriteMessage("end of program");
 				};

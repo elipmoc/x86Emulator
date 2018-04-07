@@ -10,6 +10,7 @@
 namespace x86 {
 
 
+	//カスタムマニュピレータ
 	std::wostream& hex08_manip(std::wostream& ost) {
 		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
 	}
