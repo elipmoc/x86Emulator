@@ -29,7 +29,8 @@ namespace UnitTest1
 				auto trace = [](std::wstring str) {
 					Logger::WriteMessage(str.c_str());
 				};
-				emu.exeute(success,fail,trace);
+				emu.Exeute(success,fail,trace);
+				Logger::WriteMessage(emu.Dump_registers().c_str());
 		}
 	};
 }

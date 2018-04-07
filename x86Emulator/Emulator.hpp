@@ -4,9 +4,15 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
+#include <sstream>
+#include <iomanip>
 
 namespace x86 {
 
+
+	std::wostream& hex08_manip(std::wostream& ost) {
+		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
+	}
 
 	struct Register
 	{
@@ -19,6 +25,8 @@ namespace x86 {
 		static constexpr unsigned ESI = 6;
 		static constexpr unsigned EDI = 7;
 		static constexpr unsigned REGISTERS_COUNT = 8;
+		static constexpr wchar_t* name[] = {
+			L"EAX", L"ECX", L"EDX", L"EBX", L"ESP", L"EBP", L"ESI", L"EDI" };
 	};
 
 
@@ -107,7 +115,7 @@ namespace x86 {
 		}
 
 		template<class Success, class Fail,class Trace>
-		void exeute(Success success,Fail fail,Trace trace) {
+		void Exeute(Success success,Fail fail,Trace trace) {
 			while (eip < memorySize) {
 				uint8_t code = getCode8(0);
 				std::wstringstream ss;
@@ -127,5 +135,21 @@ namespace x86 {
 				}
 			}
 		}
+
+		/* 汎用レジスタとプログラムカウンタの値を標準出力に出力する */
+		std::wstring Dump_registers()const
+		{
+			std::wstringstream ss;
+			for (size_t i = 0; i < Register::REGISTERS_COUNT; i++) {
+				ss<<std::wstring(Register::name[i])<<" = "<<hex08_manip<< registers[i]<<std::endl;
+			}
+
+			ss<<"EIP = "<< hex08_manip<<eip<<std::endl;
+			return ss.str();
+
+		}
+
 	};
+
+
 }
