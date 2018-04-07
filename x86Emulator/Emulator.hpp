@@ -106,11 +106,14 @@ namespace x86 {
 			}
 		}
 
-		template<class Success, class Fail>
-		void exeute(Success success,Fail fail) {
+		template<class Success, class Fail,class Trace>
+		void exeute(Success success,Fail fail,Trace trace) {
 			while (eip < memorySize) {
 				uint8_t code = getCode8(0);
-
+				std::wstringstream ss;
+				ss << "EIP = " << std::hex << eip << ", Code = " << std::hex << code<<std::endl;
+				/* 現在のプログラムカウンタと実行されるバイナリを出力する */
+				trace(ss.str());
 				if (instructions[code] == false) {
 					fail();
 					break;

@@ -26,7 +26,10 @@ namespace UnitTest1
 				auto fail = []() {
 					Assert::Fail(L"Not Implemented");
 				};
-				emu.exeute(success,fail);
+				auto trace = [](std::wstring str) {
+					Logger::WriteMessage(str.c_str());
+				};
+				emu.exeute(success,fail,trace);
 		}
 	};
 }
