@@ -68,6 +68,17 @@ namespace x86 {
 			return ret;
 		}
 
+		int32_t getSignCode32(const int index)const {
+			int32_t ret = 0;
+
+			/* リトルエンディアンでメモリの値を取得する */
+			for (int i = 0; i < 4; i++) {
+				ret |= getCode8(index + i) << (i * 8);
+			}
+
+			return ret;
+		}
+
 		void mov_r32_imm32() {
 			const uint8_t reg = getCode8(0) - 0xB8;
 			const uint32_t value = getCode32(1);
@@ -80,11 +91,17 @@ namespace x86 {
 			eip += (diff + 2);
 		}
 
+		void near_jump() {
+			const int32_t diff = getSignCode32(1);
+			eip += (diff + 5);
+		}
+
 		void InitInstructions() {
 			for (int i = 0; i < 8; i++) {
 				instructions[0xB8 + i] = [this](){this->mov_r32_imm32(); };
 			}
 			instructions[0xEB] = [this]() {this->short_jump(); };
+			instructions[0xE9] = [this]() {this->near_jump(); };
 		}
 
 	public:
