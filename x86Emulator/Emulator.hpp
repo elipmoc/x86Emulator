@@ -69,14 +69,7 @@ namespace x86 {
 		}
 
 		int32_t getSignCode32(const int index)const {
-			int32_t ret = 0;
-
-			/* リトルエンディアンでメモリの値を取得する */
-			for (int i = 0; i < 4; i++) {
-				ret |= getCode8(index + i) << (i * 8);
-			}
-
-			return ret;
+			return static_cast<int32_t>(getCode32(index));
 		}
 
 		void mov_r32_imm32() {
