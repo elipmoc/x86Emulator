@@ -33,6 +33,9 @@ namespace x86 {
 
 	class Emulator {
 	private:
+
+		const uint32_t start_eip;
+
 		//汎用レジスタ
 		uint32_t registers[Register::REGISTERS_COUNT];
 
@@ -103,7 +106,8 @@ namespace x86 {
 			:memory(std::make_unique<uint8_t[]>(size)),
 			//レジスタの初期値を指定されたものにする
 			eip(eip),
-			memorySize(size)
+			memorySize(size),
+			start_eip(eip)
 		{
 			//汎用レジスタの初期値を全て0にする
 			std::memset(registers, 0, sizeof(registers));
@@ -114,13 +118,13 @@ namespace x86 {
 
 		template<class CharT,class Traits = std::char_traits<CharT>>
 		void Read(std::basic_istream<CharT,Traits>& ifs) {
-			ifs.read(reinterpret_cast<char*>(memory.get()), 512);
+			ifs.read(reinterpret_cast<char*>(memory.get()+start_eip), 512);
 		}
 
 		template<class ByteIterator>
 		void Read(ByteIterator begin, ByteIterator end) {
-			size_t i = 0;
-			for (auto itr = begin; itr != end && i<512; ++itr, i++) {
+			size_t i = start_eip;
+			for (auto itr = begin; itr != end && i<512+start_eip; ++itr, i++) {
 				*(memory.get() + i ) = *itr;
 			}
 		}
