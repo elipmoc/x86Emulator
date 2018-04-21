@@ -26,12 +26,14 @@ namespace x86 {
 			std::memset(registers, 0, sizeof(registers));
 		}
 
-		uint32_t& operator[](size_t index) {
+		uint32_t get_register32(int index)const
+		{
 			return registers[index];
 		}
 
-		uint32_t operator[](size_t index)const {
-			return registers[index];
+		void set_register32(int index, uint32_t value)
+		{
+			registers[index] = value;
 		}
 	};
 

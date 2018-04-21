@@ -15,6 +15,20 @@ namespace x86 {
 	std::wostream& hex08_manip(std::wostream& ost) {
 		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
 	}
+	
+	struct ModRM {
+		uint8_t mod;
+		union {
+			uint8_t opecode;
+			uint8_t reg_index;
+		};
+		uint8_t rm;
+		uint8_t sib;
+		union {
+			int8_t disp8;
+			uint32_t disp32;
+		};
+	};
 
 	class Emulator {
 	private:
@@ -35,11 +49,87 @@ namespace x86 {
 
 		std::function<void()> instructions[256];
 
+		ModRM parseModRM() {
+			uint8_t code;
+			ModRM modrm;
+			memset(&modrm, 0, sizeof(ModRM));
+			code = codeFetch.getCode8(0);
+			modrm.mod = ((code & 0xC0) >> 6);//    C0=1100 0000
+			modrm.opecode = ((code & 0x38) >> 3);//38=0011 1000
+			modrm.rm = code & 0x07;//              07=0000 0111
+			codeFetch.addEip(1);
+
+			if (modrm.mod != 3 && modrm.rm == 4) {
+				modrm.sib = codeFetch.getCode8(0);
+				codeFetch.addEip(1);
+			}
+
+			if ((modrm.mod == 0 && modrm.rm == 5) || modrm.mod == 2) {
+				modrm.disp32 = codeFetch.getSignCode32(0);
+				codeFetch.addEip(4);
+			}
+			else if (modrm.mod == 1) {
+				modrm.disp8 = codeFetch.getSignCode8(0);
+				codeFetch.addEip(1);
+			}
+
+
+		}
+
+		void set_rm32(const ModRM &modrm, uint32_t value) {
+			if (modrm.mod == 3)
+				registers.set_register32(modrm.rm, value);
+			else {
+				uint32_t address = calc_memory_address(modrm);
+				memory.set_memory32(address, value);
+			}
+		}
+
+		uint32_t calc_memory_address(const ModRM &modrm) {
+			if (modrm.mod == 0) {
+				if (modrm.rm == 4) {
+					throw L"not implemeted ModRM mod=0 rm=4 \n";
+					exit(0);
+				}
+				else if (modrm.rm == 5)
+					return modrm.disp32;
+				else
+					return registers.get_register32(modrm.rm);
+			}
+			else if (modrm.mod == 1) {
+				if (modrm.rm == 4) {
+					throw L"not implemeted ModRM mod=1 rm=4 \n";
+					exit(0);
+				}
+				else
+					return registers.get_register32(modrm.rm) + modrm.disp8;
+			}
+			else if (modrm.mod == 2) {
+				if (modrm.rm == 4) {
+					throw L"not implemeted ModRM mod=2 rm=4 \n";
+					exit(0);
+				}
+				else
+					return registers.get_register32(modrm.rm) + modrm.disp32;
+			}
+			else {
+				throw L"not implemeted ModRM mod=3 \n";
+				exit(0);
+			}
+		}
+
 		void mov_r32_imm32() {
 			const uint8_t reg = codeFetch.getCode8(0) - 0xB8;
 			const uint32_t value =codeFetch.getCode32(1);
-			registers[reg] = value;
+			registers.set_register32(reg,value);
 			codeFetch.addEip(5);
+		}
+		void mov_rm32_imm32() {
+			codeFetch.addEip(1);
+			ModRM modrm = parseModRM();
+			uint32_t value = codeFetch.getCode32(0);
+			codeFetch.addEip(4);
+			set_rm32(modrm, value);
 		}
 
 		void short_jump() {
@@ -68,7 +158,7 @@ namespace x86 {
 			codeFetch(eip,memory),
 			start_eip(eip)
 		{
-			registers[Registers::ESP] = esp;
+			registers.set_register32(Registers::ESP, esp);
 
 			InitInstructions();
 		}
@@ -113,7 +203,7 @@ namespace x86 {
 		{
 			std::wstringstream ss;
 			for (size_t i = 0; i < Registers::REGISTERS_COUNT; i++) {
-				ss<<std::wstring(Registers::name[i])<<" = "<<hex08_manip<< registers[i]<<std::endl;
+				ss<<std::wstring(Registers::name[i])<<" = "<<hex08_manip<< registers.get_register32(i)<<std::endl;
 			}
 
 			ss<<"EIP = "<< hex08_manip<<codeFetch.getEip()<<std::endl;
