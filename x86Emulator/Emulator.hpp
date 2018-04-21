@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-#include <memory>
+
+#include "Registers.hpp"
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -15,20 +15,7 @@ namespace x86 {
 		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
 	}
 
-	struct Register
-	{
-		static constexpr unsigned EAX = 0;
-		static constexpr unsigned ECX = 1;
-		static constexpr unsigned EDX = 2;
-		static constexpr unsigned EBX = 3;
-		static constexpr unsigned ESP = 4;
-		static constexpr unsigned EBP = 5;
-		static constexpr unsigned ESI = 6;
-		static constexpr unsigned EDI = 7;
-		static constexpr unsigned REGISTERS_COUNT = 8;
-		static constexpr wchar_t* name[] = {
-			L"EAX", L"ECX", L"EDX", L"EBX", L"ESP", L"EBP", L"ESI", L"EDI" };
-	};
+	
 
 
 	class Emulator {
@@ -37,7 +24,7 @@ namespace x86 {
 		const uint32_t start_eip;
 
 		//汎用レジスタ
-		uint32_t registers[Register::REGISTERS_COUNT];
+		Registers registers;
 
 		//EFLAGSレジスタ
 		uint32_t eflags;
@@ -109,9 +96,7 @@ namespace x86 {
 			memorySize(size),
 			start_eip(eip)
 		{
-			//汎用レジスタの初期値を全て0にする
-			std::memset(registers, 0, sizeof(registers));
-			this->registers[Register::ESP] = esp;
+			registers[Registers::ESP] = esp;
 
 			InitInstructions();
 		}
@@ -155,8 +140,8 @@ namespace x86 {
 		std::wstring Dump_registers()const
 		{
 			std::wstringstream ss;
-			for (size_t i = 0; i < Register::REGISTERS_COUNT; i++) {
-				ss<<std::wstring(Register::name[i])<<" = "<<hex08_manip<< registers[i]<<std::endl;
+			for (size_t i = 0; i < Registers::REGISTERS_COUNT; i++) {
+				ss<<std::wstring(Registers::name[i])<<" = "<<hex08_manip<< registers[i]<<std::endl;
 			}
 
 			ss<<"EIP = "<< hex08_manip<<eip<<std::endl;
