@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CodeFetch.hpp" />
     <ClInclude Include="Emulator.hpp" />
     <ClInclude Include="Memory.hpp" />
     <ClInclude Include="Registers.hpp" />
