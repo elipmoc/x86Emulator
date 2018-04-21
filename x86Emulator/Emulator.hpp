@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Registers.hpp"
+#include "Memory.hpp"
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -15,9 +16,6 @@ namespace x86 {
 		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
 	}
 
-	
-
-
 	class Emulator {
 	private:
 
@@ -30,14 +28,12 @@ namespace x86 {
 		uint32_t eflags;
 
 		//メモリ(バイト列)
-		std::unique_ptr<uint8_t[]> memory;
+		Memory memory;
 
 		//プログラムカウンタ
 		uint32_t eip;
 
 		std::function<void()> instructions[256];
-
-		const size_t memorySize;
 
 		uint32_t getCode8(const int index)const {
 			return memory[eip + index];
@@ -90,10 +86,9 @@ namespace x86 {
 	public:
 
 		Emulator(size_t size, uint32_t eip, uint32_t esp)
-			:memory(std::make_unique<uint8_t[]>(size)),
+			:memory(size),
 			//レジスタの初期値を指定されたものにする
 			eip(eip),
-			memorySize(size),
 			start_eip(eip)
 		{
 			registers[Registers::ESP] = esp;
@@ -103,20 +98,20 @@ namespace x86 {
 
 		template<class CharT,class Traits = std::char_traits<CharT>>
 		void Read(std::basic_istream<CharT,Traits>& ifs) {
-			ifs.read(reinterpret_cast<char*>(memory.get()+start_eip), 512);
+			ifs.read(reinterpret_cast<char*>(&memory[start_eip]), 512);
 		}
 
 		template<class ByteIterator>
 		void Read(ByteIterator begin, ByteIterator end) {
 			size_t i = start_eip;
 			for (auto itr = begin; itr != end && i<512+start_eip; ++itr, i++) {
-				*(memory.get() + i ) = *itr;
+				memory[i] = *itr;
 			}
 		}
 
 		template<class Success, class Fail,class Trace>
 		void Exeute(Success success,Fail fail,Trace trace) {
-			while (eip < memorySize) {
+			while (eip < memory.memorySize) {
 				uint8_t code = getCode8(0);
 				std::wstringstream ss;
 				ss << "EIP = " << std::hex << eip << ", Code = " << std::hex << code<<std::endl;
@@ -146,10 +141,6 @@ namespace x86 {
 
 			ss<<"EIP = "<< hex08_manip<<eip<<std::endl;
 			return ss.str();
-
 		}
-
 	};
-
-
 }

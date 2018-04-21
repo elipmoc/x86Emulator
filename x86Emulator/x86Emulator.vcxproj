@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Emulator.hpp" />
+    <ClInclude Include="Memory.hpp" />
     <ClInclude Include="Registers.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
