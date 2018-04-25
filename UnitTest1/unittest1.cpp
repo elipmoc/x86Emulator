@@ -28,7 +28,7 @@ namespace UnitTest1
 				auto ifs=file_load_helper("../testAsm/helloworld.bin");
 				emu.Read(ifs);
 				auto success = []() {
-					Logger::WriteMessage("end of program");
+					Logger::WriteMessage("end of program\n");
 				};
 				auto fail = []() {
 					Assert::Fail(L"Not Implemented");
@@ -49,7 +49,7 @@ namespace UnitTest1
 			auto ifs = file_load_helper("../testAsm/helloworld2.bin");
 			emu.Read(ifs);
 			auto success = []() {
-				Logger::WriteMessage("end of program");
+				Logger::WriteMessage("end of program\n");
 			};
 			auto fail = []() {
 				Assert::Fail(L"Not Implemented");
@@ -70,7 +70,7 @@ namespace UnitTest1
 			auto ifs = file_load_helper("../testAsm/modrm-test.bin");
 			emu.Read(ifs);
 			auto success = []() {
-				Logger::WriteMessage("end of program");
+				Logger::WriteMessage("end of program\n");
 			};
 			auto fail = []() {
 				Assert::Fail(L"Not Implemented");
