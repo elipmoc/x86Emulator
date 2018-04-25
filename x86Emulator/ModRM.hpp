@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 namespace x86 {
-	struct ModRM {
+	struct ModRMData {
 		uint8_t mod;
 		union {
 			uint8_t opecode;

@@ -38,10 +38,10 @@ namespace x86 {
 
 		std::function<void()> instructions[256];
 
-		ModRM parseModRM() {
+		ModRMData parseModRM() {
 			uint8_t code;
-			ModRM modrm;
-			memset(&modrm, 0, sizeof(ModRM));
+			ModRMData modrm;
+			memset(&modrm, 0, sizeof(ModRMData));
 			code = codeFetch.getCode8(0);
 			modrm.mod = ((code & 0xC0) >> 6);//    C0=1100 0000
 			modrm.opecode = ((code & 0x38) >> 3);//38=0011 1000
@@ -65,7 +65,7 @@ namespace x86 {
 
 		}
 
-		void set_rm32(const ModRM &modrm, uint32_t value) {
+		void set_rm32(const ModRMData &modrm, uint32_t value) {
 			if (modrm.mod == 3)
 				registers.set_register32(modrm.rm, value);
 			else {
@@ -74,7 +74,7 @@ namespace x86 {
 			}
 		}
 
-		uint32_t get_rm32(const  ModRM& modrm)
+		uint32_t get_rm32(const  ModRMData& modrm)
 		{
 			if (modrm.mod == 3) {
 				return registers.get_register32(modrm.rm);
@@ -85,15 +85,15 @@ namespace x86 {
 			}
 		}
 
-		void set_r32(const ModRM &modrm, uint32_t value) {
+		void set_r32(const ModRMData &modrm, uint32_t value) {
 			 registers.set_register32(modrm.reg_index, value);
 		}
 
-		uint32_t get_r32(const ModRM &modrm)const {
+		uint32_t get_r32(const ModRMData &modrm)const {
 			return registers.get_register32(modrm.reg_index);
 		}
 
-		uint32_t calc_memory_address(const ModRM &modrm) {
+		uint32_t calc_memory_address(const ModRMData &modrm) {
 			if (modrm.mod == 0) {
 				if (modrm.rm == 4) {
 					throw L"not implemeted ModRM mod=0 rm=4 \n";
@@ -134,7 +134,7 @@ namespace x86 {
 		}
 		void mov_rm32_imm32() {
 			codeFetch.addEip(1);
-			ModRM modrm = parseModRM();
+			ModRMData modrm = parseModRM();
 			uint32_t value = codeFetch.getCode32(0);
 			codeFetch.addEip(4);
 			set_rm32(modrm, value);
@@ -143,7 +143,7 @@ namespace x86 {
 		void mov_r32_rm32()
 		{
 			codeFetch.addEip(1);
-			ModRM modrm=parseModRM();
+			ModRMData modrm=parseModRM();
 			uint32_t rm32 = get_rm32(modrm);
 			set_r32(modrm, rm32);
 		}
@@ -151,7 +151,7 @@ namespace x86 {
 		void mov_rm32_r32()
 		{
 			codeFetch.addEip(1);
-			ModRM modrm=parseModRM();
+			ModRMData modrm=parseModRM();
 			uint32_t r32 = get_r32(modrm);
 			set_rm32(modrm, r32);
 		}
@@ -159,13 +159,13 @@ namespace x86 {
 		void add_rm32_r32()
 		{
 			codeFetch.addEip(1);
-			ModRM modrm=parseModRM();
+			ModRMData modrm=parseModRM();
 			uint32_t r32 = get_r32(modrm);
 			uint32_t rm32 = get_rm32(modrm);
 			set_rm32(modrm, rm32 + r32);
 		}
 
-		void sub_rm32_imm8(const ModRM &modrm)
+		void sub_rm32_imm8(const ModRMData &modrm)
 		{
 			uint32_t rm32 = get_rm32(modrm);
 			uint32_t imm8 = static_cast<int32_t>(codeFetch.getSignCode8(0));
@@ -175,7 +175,7 @@ namespace x86 {
 
 		void code_83() {
 			codeFetch.addEip(1);
-			ModRM modrm = parseModRM();
+			ModRMData modrm = parseModRM();
 			switch (modrm.opecode) {
 			case 5:
 				sub_rm32_imm8(modrm);
@@ -186,14 +186,14 @@ namespace x86 {
 			}
 		}
 
-		void inc_rm32(const ModRM &modrm) {
+		void inc_rm32(const ModRMData &modrm) {
 			uint32_t value = get_rm32(modrm);
 			set_rm32(modrm, value + 1);
 		}
 
 		void code_ff() {
 			codeFetch.addEip(1);
-			ModRM modrm = parseModRM();
+			ModRMData modrm = parseModRM();
 			switch (modrm.opecode)
 			{
 			case 0:
