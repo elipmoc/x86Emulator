@@ -146,6 +146,7 @@
     <ClInclude Include="CodeFetch.hpp" />
     <ClInclude Include="Emulator.hpp" />
     <ClInclude Include="Memory.hpp" />
+    <ClInclude Include="ModRM.hpp" />
     <ClInclude Include="Registers.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

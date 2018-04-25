@@ -3,6 +3,7 @@
 #include "Registers.hpp"
 #include "Memory.hpp"
 #include "CodeFetch.hpp"
+#include "ModRM.hpp"
 #include <sstream>
 #include <cstring>
 #include <fstream>
@@ -17,19 +18,6 @@ namespace x86 {
 		return ost << std::setfill(L'0') << std::setw(5) << std::hex;
 	}
 	
-	struct ModRM {
-		uint8_t mod;
-		union {
-			uint8_t opecode;
-			uint8_t reg_index;
-		};
-		uint8_t rm;
-		uint8_t sib;
-		union {
-			int8_t disp8;
-			uint32_t disp32;
-		};
-	};
 
 	class Emulator {
 	private:
