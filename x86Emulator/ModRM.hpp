@@ -14,4 +14,9 @@ namespace x86 {
 			uint32_t disp32;
 		};
 	};
+
+
+	class ModRM {
+
+	};
 }
