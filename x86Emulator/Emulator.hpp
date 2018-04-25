@@ -3,6 +3,7 @@
 #include "Registers.hpp"
 #include "Memory.hpp"
 #include "CodeFetch.hpp"
+#include <sstream>
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -72,7 +73,7 @@ namespace x86 {
 				modrm.disp8 = codeFetch.getSignCode8(0);
 				codeFetch.addEip(1);
 			}
-
+			return modrm;
 
 		}
 
@@ -83,6 +84,25 @@ namespace x86 {
 				uint32_t address = calc_memory_address(modrm);
 				memory.set_memory32(address, value);
 			}
+		}
+
+		uint32_t get_rm32(const  ModRM& modrm)
+		{
+			if (modrm.mod == 3) {
+				return registers.get_register32(modrm.rm);
+			}
+			else {
+				uint32_t address = calc_memory_address(modrm);
+				return memory.get_memory32(address);
+			}
+		}
+
+		void set_r32(const ModRM &modrm, uint32_t value) {
+			 registers.set_register32(modrm.reg_index, value);
+		}
+
+		uint32_t get_r32(const ModRM &modrm)const {
+			return registers.get_register32(modrm.reg_index);
 		}
 
 		uint32_t calc_memory_address(const ModRM &modrm) {
@@ -132,6 +152,71 @@ namespace x86 {
 			set_rm32(modrm, value);
 		}
 
+		void mov_r32_rm32()
+		{
+			codeFetch.addEip(1);
+			ModRM modrm=parseModRM();
+			uint32_t rm32 = get_rm32(modrm);
+			set_r32(modrm, rm32);
+		}
+
+		void mov_rm32_r32()
+		{
+			codeFetch.addEip(1);
+			ModRM modrm=parseModRM();
+			uint32_t r32 = get_r32(modrm);
+			set_rm32(modrm, r32);
+		}
+
+		void add_rm32_r32()
+		{
+			codeFetch.addEip(1);
+			ModRM modrm=parseModRM();
+			uint32_t r32 = get_r32(modrm);
+			uint32_t rm32 = get_rm32(modrm);
+			set_rm32(modrm, rm32 + r32);
+		}
+
+		void sub_rm32_imm8(const ModRM &modrm)
+		{
+			uint32_t rm32 = get_rm32(modrm);
+			uint32_t imm8 = static_cast<int32_t>(codeFetch.getSignCode8(0));
+			codeFetch.addEip(1);
+			set_rm32(modrm, rm32 - imm8);
+		}
+
+		void code_83() {
+			codeFetch.addEip(1);
+			ModRM modrm = parseModRM();
+			switch (modrm.opecode) {
+			case 5:
+				sub_rm32_imm8(modrm);
+				break;
+			default:
+				throw (std::string("not implemented: 83 /")+std::to_string(modrm.opecode)).c_str();
+				exit(1);
+			}
+		}
+
+		void inc_rm32(const ModRM &modrm) {
+			uint32_t value = get_rm32(modrm);
+			set_rm32(modrm, value + 1);
+		}
+
+		void code_ff() {
+			codeFetch.addEip(1);
+			ModRM modrm = parseModRM();
+			switch (modrm.opecode)
+			{
+			case 0:
+				inc_rm32(modrm);
+				break;
+			default:
+				throw (std::string("not implemented: ff /") + std::to_string(modrm.opecode)).c_str();
+				exit(1);
+			}
+		}
+
 		void short_jump() {
 			const int8_t diff =codeFetch.getSignCode8(1);
 			codeFetch.addEip(diff + 2);
@@ -146,6 +231,12 @@ namespace x86 {
 			for (int i = 0; i < 8; i++) {
 				instructions[0xB8 + i] = [this](){this->mov_r32_imm32(); };
 			}
+			instructions[0x01] = [this]() {this->add_rm32_r32(); };
+			instructions[0x83] = [this]() {this->code_83(); };
+			instructions[0x89] = [this]() {this->mov_rm32_r32(); };
+			instructions[0x8B] = [this]() {this->mov_r32_rm32(); };
+			instructions[0xC7] = [this]() {this->mov_rm32_imm32(); };
+			instructions[0xFF] = [this]() {this->code_ff(); };
 			instructions[0xEB] = [this]() {this->short_jump(); };
 			instructions[0xE9] = [this]() {this->near_jump(); };
 		}

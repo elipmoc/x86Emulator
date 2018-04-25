@@ -34,5 +34,25 @@ namespace x86 {
 			for (size_t i = 0; i < 4; i++)
 				set_memory8(address + i, value >> (i * 8));
 		}
+
+		uint32_t get_memory8(uint32_t address)const
+		{
+			return memory[address];
+		}
+
+		uint32_t get_memory32(uint32_t address)const
+		{
+			int i;
+			uint32_t ret = 0;
+
+			/* リトルエンディアンでメモリの値を取得する */
+			for (i = 0; i < 4; i++) {
+				ret |= get_memory8(address + i) << (8 * i);
+			}
+
+			return ret;
+		}
+
+
 	};
 }
