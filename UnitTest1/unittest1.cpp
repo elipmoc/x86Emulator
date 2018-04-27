@@ -36,7 +36,7 @@ namespace UnitTest1
 				auto trace = [](std::wstring str) {
 					Logger::WriteMessage(str.c_str());
 				};
-				emu.Exeute(success,fail,trace);
+				emu.Execute(success,fail,trace);
 				Logger::WriteMessage(emu.Dump_registers().c_str());
 		}
 
@@ -57,7 +57,7 @@ namespace UnitTest1
 			auto trace = [](std::wstring str) {
 				Logger::WriteMessage(str.c_str());
 			};
-			emu.Exeute(success, fail, trace);
+			emu.Execute(success, fail, trace);
 			Logger::WriteMessage(emu.Dump_registers().c_str());
 		}
 
@@ -78,7 +78,7 @@ namespace UnitTest1
 			auto trace = [](std::wstring str) {
 				Logger::WriteMessage(str.c_str());
 			};
-			emu.Exeute(success, fail, trace);
+			emu.Execute(success, fail, trace);
 			Logger::WriteMessage(emu.Dump_registers().c_str());
 		}
 	};
