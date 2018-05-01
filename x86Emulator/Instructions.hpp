@@ -94,5 +94,30 @@ namespace x86 {
 			const int32_t diff = container.GetCodeFetch().getSignCode32(1);
 			container.GetCodeFetch().addEip(diff + 5);
 		}
+
+		void push32(Container& container, uint32_t value) {
+			const uint32_t address = container.GetRegisters().get_register32(Registers::ESP) - 4;
+			container.GetRegisters().set_register32(Registers::ESP, address);
+			container.GetMemory().set_memory32(address, value);
+		}
+
+		uint32_t pop32(Container& container) {
+			const uint32_t address = container.GetRegisters().get_register32(Registers::ESP);
+			const uint32_t ret = container.GetMemory().get_memory32(address);
+			container.GetRegisters().set_register32(Registers::ESP, address + 4);
+			return ret;
+		}
+
+		void push_r32(Container& container) {
+			const uint8_t reg = container.GetCodeFetch().getCode8(0) - 0x50;
+			push32(container, container.GetRegisters().get_register32(reg));
+			container.GetCodeFetch().addEip(1);
+		};
+
+		void pop_r32(Container& container) {
+			const uint8_t reg = container.GetCodeFetch().getCode8(0)-0x58;
+			container.GetRegisters().set_register32(reg, pop32(container));
+			container.GetCodeFetch().addEip(1);
+		}
 	};
 }
