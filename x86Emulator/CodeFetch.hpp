@@ -19,6 +19,8 @@ namespace x86 {
 
 		void addEip(uint32_t add)noexcept { eip += add; }
 
+		void setEip(uint32_t eip)noexcept { this->eip = eip; }
+
 
 		uint32_t getCode8(const int index)const {
 			return memory[eip + index];
