@@ -23,6 +23,7 @@ namespace x86 {
 			instructions[0xEB] = Instructions::short_jump;
 			instructions[0xE9] = Instructions::near_jump;
 			instructions[0xC3] = Instructions::ret;
+			instructions[0xC9] = Instructions::leave;
 			instructions[0xE8] = Instructions::call_rel32;
 			for (size_t i = 0; i < 8; i++) {
 				instructions[0x50 + i] = Instructions::push_r32;
