@@ -129,5 +129,12 @@ namespace x86 {
 		void ret(Container& container) {
 			container.GetCodeFetch().setEip(pop32(container));
 		}
+
+		void leave(Container& container) {
+			uint32_t ebp = container.GetRegisters().get_register32(Registers::EBP);
+			container.GetRegisters().set_register32(Registers::ESP, ebp);
+			container.GetRegisters().set_register32(Registers::EBP, pop32(container));
+			container.GetCodeFetch().addEip(1);
+		}
 	};
 }
