@@ -123,7 +123,7 @@ namespace x86 {
 		void call_rel32(Container& container) {
 			int32_t diff = container.GetCodeFetch().getSignCode32(1);
 			push32(container,container.GetCodeFetch().getEip() + 5);
-			container.GetCodeFetch().addEip(5);
+			container.GetCodeFetch().addEip(diff+5);
 		}
 
 		void ret(Container& container) {
