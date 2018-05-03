@@ -18,89 +18,49 @@ namespace UnitTest1
 		}
 
 	public:
+
+		void testCreate(const std::string str, uint32_t eip) {
+			/* ÉÅÉÇÉäÇÕ1MB */
+			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
+			//EmulatorÇê∂ê¨
+			x86::Emulator emu(MEMORY_SIZE, eip, 0x7c00);
+			auto ifs = file_load_helper(str);
+			emu.Read(ifs);
+			auto success = []() {
+				Logger::WriteMessage("end of program\n");
+			};
+			auto fail = []() {
+				Assert::Fail(L"Not Implemented");
+			};
+			auto trace = [](std::wstring str) {
+				Logger::WriteMessage(str.c_str());
+			};
+			emu.Execute(success, fail, trace);
+			Logger::WriteMessage(emu.Dump_registers().c_str());
+		}
 		
 		TEST_METHOD(TestMethod1)
 		{
-			/* ÉÅÉÇÉäÇÕ1MB */
-			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
-				//EmulatorÇê∂ê¨
-				x86::Emulator emu(MEMORY_SIZE, 0x0000, 0x7c00);
-				auto ifs=file_load_helper("../testAsm/helloworld.bin");
-				emu.Read(ifs);
-				auto success = []() {
-					Logger::WriteMessage("end of program\n");
-				};
-				auto fail = []() {
-					Assert::Fail(L"Not Implemented");
-				};
-				auto trace = [](std::wstring str) {
-					Logger::WriteMessage(str.c_str());
-				};
-				emu.Execute(success,fail,trace);
-				Logger::WriteMessage(emu.Dump_registers().c_str());
+			testCreate("../testAsm/helloworld.bin", 0x0000);
 		}
 
 		TEST_METHOD(TestMethod2)
 		{
-			/* ÉÅÉÇÉäÇÕ1MB */
-			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
-			//EmulatorÇê∂ê¨
-			x86::Emulator emu(MEMORY_SIZE, 0x7c00, 0x7c00);
-			auto ifs = file_load_helper("../testAsm/helloworld2.bin");
-			emu.Read(ifs);
-			auto success = []() {
-				Logger::WriteMessage("end of program\n");
-			};
-			auto fail = []() {
-				Assert::Fail(L"Not Implemented");
-			};
-			auto trace = [](std::wstring str) {
-				Logger::WriteMessage(str.c_str());
-			};
-			emu.Execute(success, fail, trace);
-			Logger::WriteMessage(emu.Dump_registers().c_str());
+			testCreate("../testAsm/helloworld2.bin", 0x7c00);
 		}
 
 		TEST_METHOD(TestMethod3)
 		{
-			/* ÉÅÉÇÉäÇÕ1MB */
-			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
-			//EmulatorÇê∂ê¨
-			x86::Emulator emu(MEMORY_SIZE, 0x7c00, 0x7c00);
-			auto ifs = file_load_helper("../testAsm/modrm-test.bin");
-			emu.Read(ifs);
-			auto success = []() {
-				Logger::WriteMessage("end of program\n");
-			};
-			auto fail = []() {
-				Assert::Fail(L"Not Implemented");
-			};
-			auto trace = [](std::wstring str) {
-				Logger::WriteMessage(str.c_str());
-			};
-			emu.Execute(success, fail, trace);
-			Logger::WriteMessage(emu.Dump_registers().c_str());
+			testCreate("../testAsm/modrm-test.bin", 0x7c00);
 		}
 
 		TEST_METHOD(TestMethod4)
 		{
-			/* ÉÅÉÇÉäÇÕ1MB */
-			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
-			//EmulatorÇê∂ê¨
-			x86::Emulator emu(MEMORY_SIZE, 0x7c00, 0x7c00);
-			auto ifs = file_load_helper("../testAsm/call-test.bin");
-			emu.Read(ifs);
-			auto success = []() {
-				Logger::WriteMessage("end of program\n");
-			};
-			auto fail = []() {
-				Assert::Fail(L"Not Implemented");
-			};
-			auto trace = [](std::wstring str) {
-				Logger::WriteMessage(str.c_str());
-			};
-			emu.Execute(success, fail, trace);
-			Logger::WriteMessage(emu.Dump_registers().c_str());
+			testCreate("../testAsm/call-test.bin", 0x7c00);
+		}
+		TEST_METHOD(TestMethod5)
+		{
+			testCreate("../testAsm/leave-test.bin", 0x7c00);
 		}
 	};
 }
