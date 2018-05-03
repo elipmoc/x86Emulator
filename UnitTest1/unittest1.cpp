@@ -81,5 +81,26 @@ namespace UnitTest1
 			emu.Execute(success, fail, trace);
 			Logger::WriteMessage(emu.Dump_registers().c_str());
 		}
+
+		TEST_METHOD(TestMethod4)
+		{
+			/* ÉÅÉÇÉäÇÕ1MB */
+			static constexpr size_t MEMORY_SIZE = (1024 * 1024);
+			//EmulatorÇê∂ê¨
+			x86::Emulator emu(MEMORY_SIZE, 0x7c00, 0x7c00);
+			auto ifs = file_load_helper("../testAsm/call-test.bin");
+			emu.Read(ifs);
+			auto success = []() {
+				Logger::WriteMessage("end of program\n");
+			};
+			auto fail = []() {
+				Assert::Fail(L"Not Implemented");
+			};
+			auto trace = [](std::wstring str) {
+				Logger::WriteMessage(str.c_str());
+			};
+			emu.Execute(success, fail, trace);
+			Logger::WriteMessage(emu.Dump_registers().c_str());
+		}
 	};
 }
