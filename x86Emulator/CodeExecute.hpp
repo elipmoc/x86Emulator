@@ -25,6 +25,8 @@ namespace x86 {
 			instructions[0xC3] = Instructions::ret;
 			instructions[0xC9] = Instructions::leave;
 			instructions[0xE8] = Instructions::call_rel32;
+			instructions[0x68] = Instructions::push_imm32;
+			instructions[0x6A] = Instructions::push_imm8;
 			for (size_t i = 0; i < 8; i++) {
 				instructions[0x50 + i] = Instructions::push_r32;
 			}
