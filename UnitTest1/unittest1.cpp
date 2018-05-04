@@ -62,5 +62,9 @@ namespace UnitTest1
 		{
 			testCreate("../testAsm/leave-test.bin", 0x7c00);
 		}
+		TEST_METHOD(TestMethod6)
+		{
+			testCreate("../testAsm/arg-test.bin", 0x7c00);
+		}
 	};
 }
