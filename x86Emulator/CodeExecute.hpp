@@ -15,6 +15,7 @@ namespace x86 {
 				instructions[0xB8 + i] = Instructions::mov_r32_imm32;
 			}
 			instructions[0x01] = Instructions::add_rm32_r32;
+			instructions[0x3b] = Instructions::cmp_r32_rm32;
 			instructions[0x83] = Instructions::code_83;
 			instructions[0x89] = Instructions::mov_rm32_r32;
 			instructions[0x8B] = Instructions::mov_r32_rm32;
