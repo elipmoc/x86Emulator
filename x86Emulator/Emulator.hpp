@@ -21,8 +21,6 @@ namespace x86 {
 
 		const uint32_t start_eip;
 
-		//EFLAGSレジスタ
-		uint32_t eflags;
 
 		//仮想環境
 		Container container;
