@@ -50,12 +50,29 @@ namespace x86 {
 			container.GetCodeFetch().addEip(1);
 			modrm.set_rm32(container.GetRegisters(), container.GetMemory(), rm32 + imm8);
 		}
+		void cmp_r32_rm32(Container& container) {
+			container.GetCodeFetch().addEip(1);
+			auto modrm = parseModRM(container.GetCodeFetch());
+			uint32_t r32 = modrm.get_r32(container.GetRegisters());
+			uint32_t rm32 = modrm.get_rm32(container.GetRegisters(), container.GetMemory());
+			uint64_t result = static_cast<uint64_t>(r32) - static_cast<uint64_t>(rm32);
+			container.GetEflags().update_eflags_sub(r32, rm32, result);
+		}
+		void cmp_rm32_imm8(Container& container, ModRM& modrm) {
+			uint32_t rm32 = modrm.get_rm32(container.GetRegisters(),container.GetMemory());
+			uint32_t imm8 = static_cast<int32_t>(container.GetCodeFetch().getSignCode8(0));
+			container.GetCodeFetch().addEip(1);
+			uint64_t result = static_cast<uint64_t>(rm32) - static_cast<uint64_t>(imm8);
+			container.GetEflags().update_eflags_sub(rm32, imm8, result);
+		}
 		void sub_rm32_imm8(Container &container, ModRM &modrm)
 		{
 			uint32_t rm32 = modrm.get_rm32(container.GetRegisters(), container.GetMemory());
 			uint32_t imm8 = static_cast<int32_t>(container.GetCodeFetch().getSignCode8(0));
 			container.GetCodeFetch().addEip(1);
-			modrm.set_rm32(container.GetRegisters(), container.GetMemory(), rm32 - imm8);
+			uint64_t result = static_cast<uint64_t>(rm32) - static_cast<uint64_t>(imm8);
+			modrm.set_rm32(container.GetRegisters(), container.GetMemory(), result);
+			container.GetEflags().update_eflags_sub(rm32, imm8, result);
 		}
 
 		void code_83(Container &container) {
@@ -67,6 +84,9 @@ namespace x86 {
 				break;
 			case 5:
 				sub_rm32_imm8(container,modrm);
+				break;
+			case 7:
+				cmp_rm32_imm8(container, modrm);
 				break;
 			default:
 				throw (std::string("not implemented: 83 /") + std::to_string(modrm.get_opecode())).c_str();
