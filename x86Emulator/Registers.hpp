@@ -16,6 +16,14 @@ namespace x86 {
 		static constexpr unsigned ESI = 6;
 		static constexpr unsigned EDI = 7;
 		static constexpr unsigned REGISTERS_COUNT = 8;
+		static constexpr unsigned AL = EAX;
+		static constexpr unsigned CL = ECX;
+		static constexpr unsigned DL = EDX;
+		static constexpr unsigned BL = EBX;
+		static constexpr unsigned AH=AL+4;
+		static constexpr unsigned CH=CL+4;
+		static constexpr unsigned DH=DL+4;
+		static constexpr unsigned BH=BL+4;
 		static constexpr wchar_t* name[] = {
 			L"EAX", L"ECX", L"EDX", L"EBX", L"ESP", L"EBP", L"ESI", L"EDI" };
 	private:
@@ -34,6 +42,26 @@ namespace x86 {
 		void set_register32(int index, uint32_t value)
 		{
 			registers[index] = value;
+		}
+
+		uint8_t get_register8(int index)const  {
+			if (index < 4) {
+				return registers[index] & 0xff;
+			}
+			else {
+				return (registers[index - 4] >> 8) & 0xff;
+			}
+		}
+
+		void set_register8(int index, uint8_t value) {
+			if(index<4){
+				uint32_t r = registers[index] & 0xffffff00;
+				registers[index] = r | value;
+			}
+			else {
+				uint32_t r = registers[index-4] & 0xffff00ff;
+				registers[index-4] = r | (static_cast<uint32_t>(value)<<8);
+			}
 		}
 	};
 
