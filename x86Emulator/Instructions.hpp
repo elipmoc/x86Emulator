@@ -173,5 +173,31 @@ namespace x86 {
 			container.GetRegisters().set_register32(Registers::EBP, pop32(container));
 			container.GetCodeFetch().addEip(1);
 		}
+
+		template<int F>
+		void jx(Container& container) {
+			int diff = container.GetEflags().get<F>() ? container.GetCodeFetch().getSignCode8(1) : 0;
+			container.GetCodeFetch().addEip(diff + 2);
+		}
+
+		template<int F>
+		void jnx(Container& container) {
+			int diff = (!container.GetEflags().get<F>()) ? container.GetCodeFetch().getSignCode8(1) : 0;
+			container.GetCodeFetch().addEip(diff + 2);
+		}
+
+		void jl(Container& container) {
+			auto& eflags=container.GetEflags();
+			int diff = (eflags.get<Eflags::sign_flag>() != eflags.get<Eflags::overflow_flag>()) ? container.GetCodeFetch().getSignCode8(1) : 0;
+			container.GetCodeFetch().addEip(diff + 2);
+		}
+
+		void jle(Container& container) {
+			auto& eflags = container.GetEflags();
+			int diff = (eflags.get<Eflags::zero_flag>() || (eflags.get<Eflags::sign_flag>() != eflags.get<Eflags::overflow_flag>()))
+				? container.GetCodeFetch().getSignCode8(1) : 0;
+			container.GetCodeFetch().addEip(diff + 2);
+		}
+
 	};
 }
