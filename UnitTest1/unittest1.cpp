@@ -66,5 +66,13 @@ namespace UnitTest1
 		{
 			testCreate("../testAsm/arg-test.bin", 0x7c00);
 		}
+		TEST_METHOD(TestMethod7)
+		{
+			testCreate("../testAsm/if-test.bin", 0x7c00);
+		}
+		TEST_METHOD(TestMethod8)
+		{
+			testCreate("../testAsm/while-test.bin", 0x7c00);
+		}
 	};
 }
