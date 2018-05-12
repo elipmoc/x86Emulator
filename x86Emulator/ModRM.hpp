@@ -29,9 +29,16 @@ namespace x86 {
 			return registers.get_register32(modrmData.reg_index);
 		}
 
+		uint8_t get_r8(const Registers& registers)const {
+			return registers.get_register8(modrmData.reg_index);
+		}
+
 		//modrmDataから使用するレジスタを識別してそのレジスタに値をセットする
 		void set_r32(Registers &registers,uint32_t value) {
 			registers.set_register32(modrmData.reg_index, value);
+		}
+		void set_r8(Registers &registers, uint8_t value) {
+			registers.set_register8(modrmData.reg_index, value);
 		}
 
 		void set_rm32(Registers &registers,Memory &memory,uint32_t value) {
@@ -43,6 +50,15 @@ namespace x86 {
 			}
 		}
 
+		void set_rm8(Registers &registers, Memory &memory, uint8_t value) {
+			if (modrmData.mod == 3)
+				registers.set_register8(modrmData.rm, value);
+			else {
+				uint32_t address = calc_memory_address(registers);
+				memory.set_memory8(address, value);
+			}
+		}
+
 		uint32_t get_rm32(const Registers &registers,const Memory &memory)const
 		{
 			if (modrmData.mod == 3)
@@ -50,6 +66,16 @@ namespace x86 {
 			else {
 				uint32_t address = calc_memory_address(registers);
 				return memory.get_memory32(address);
+			}
+		}
+
+		uint8_t get_rm8(const Registers &registers, const Memory &memory)const
+		{
+			if (modrmData.mod == 3)
+				return registers.get_register8(modrmData.rm);
+			else {
+				uint32_t address = calc_memory_address(registers);
+				return memory.get_memory8(address);
 			}
 		}
 

@@ -7,6 +7,25 @@
 namespace x86 {
 	namespace Instructions{
 
+		void mov_r8_imm8(Container& container) {
+			uint8_t reg = container.GetCodeFetch().getCode8(0)-0xB0;
+			container.GetRegisters().set_register8(reg, container.GetCodeFetch().getCode8(1));
+			container.GetCodeFetch().addEip(2);
+		}
+		void mov_rm8_r8(Container& container) {
+			container.GetCodeFetch().addEip(1);
+			auto modrm = parseModRM(container.GetCodeFetch());
+			uint8_t r8 = modrm.get_r8(container.GetRegisters());
+			modrm.set_rm8(container.GetRegisters(),container.GetMemory(), r8);
+		}
+		void mov_r8_rm8(Container& container)
+		{
+			container.GetCodeFetch().addEip(1);
+			auto modrm=parseModRM(container.GetCodeFetch());
+			uint8_t rm8 = modrm.get_rm8(container.GetRegisters(),container.GetMemory());
+			modrm.set_r8(container.GetRegisters(), rm8);
+		}
+
 		void mov_r32_imm32(Container &container) {
 			const uint8_t reg = container.GetCodeFetch().getCode8(0) - 0xB8;
 			const uint32_t value = container.GetCodeFetch().getCode32(1);
@@ -51,6 +70,22 @@ namespace x86 {
 			container.GetCodeFetch().addEip(1);
 			modrm.set_rm32(container.GetRegisters(), container.GetMemory(), rm32 + imm8);
 		}
+		void cmp_al_imm8(Container& container)
+		{
+			uint8_t value = container.GetCodeFetch().getCode8(1);
+			uint8_t al =container.GetRegisters().get_register8(Registers::AL);
+			uint64_t result = static_cast<uint64_t>(al) - static_cast<uint64_t>(value);
+			container.GetEflags().update_eflags_sub(al, value, result);
+			container.GetCodeFetch().addEip(2);
+		}
+		void cmp_eax_imm32(Container& container)
+		{
+			uint32_t value = container.GetCodeFetch().getCode32(1);
+			uint32_t eax = container.GetRegisters().get_register32(Registers::EAX);
+			uint64_t result = static_cast<uint64_t>(eax) - static_cast<uint64_t>(value);
+			container.GetEflags().update_eflags_sub(eax, value, result);
+			container.GetCodeFetch().addEip(5);
+		}
 		void cmp_r32_rm32(Container& container) {
 			container.GetCodeFetch().addEip(1);
 			auto modrm = parseModRM(container.GetCodeFetch());
@@ -94,7 +129,12 @@ namespace x86 {
 				exit(1);
 			}
 		}
-
+		void inc_r32(Container& container)
+		{
+			uint8_t reg = container.GetCodeFetch().getCode8(0) - 0x40;
+			container.GetRegisters().set_register32(reg,container.GetRegisters().get_register32(reg) + 1);
+			container.GetCodeFetch().addEip(1);
+		}
 		void inc_rm32(Container &container,ModRM modrm) {
 			uint32_t value = modrm.get_rm32(container.GetRegisters(), container.GetMemory());
 			modrm.set_rm32(container.GetRegisters(), container.GetMemory(), value + 1);

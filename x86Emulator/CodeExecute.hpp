@@ -16,8 +16,12 @@ namespace x86 {
 			}
 			instructions[0x01] = Instructions::add_rm32_r32;
 			instructions[0x3b] = Instructions::cmp_r32_rm32;
+			instructions[0x3C] = Instructions::cmp_al_imm8;
+			instructions[0x3D] = Instructions::cmp_eax_imm32;
 			instructions[0x83] = Instructions::code_83;
 			instructions[0x89] = Instructions::mov_rm32_r32;
+			instructions[0x88] = Instructions::mov_rm8_r8;
+			instructions[0x8A] = Instructions::mov_r8_rm8;
 			instructions[0x8B] = Instructions::mov_r32_rm32;
 			instructions[0xC7] = Instructions::mov_rm32_imm32;
 			instructions[0xFF] = Instructions::code_ff;
@@ -41,6 +45,14 @@ namespace x86 {
 			instructions[0x7E] = Instructions::jle;
 			instructions[0xEC] = Instructions::in_al_dx;
 			instructions[0xEE] = Instructions::out_dx_al;
+
+			for (size_t i = 0; i < 8; i++) {
+				instructions[0xB0 + i] = Instructions::mov_r8_imm8;
+			}
+
+			for (size_t i = 0; i < 8; i++) {
+				instructions[0x40 + i] = Instructions::inc_r32;
+			}
 
 			for (size_t i = 0; i < 8; i++) {
 				instructions[0x50 + i] = Instructions::push_r32;
