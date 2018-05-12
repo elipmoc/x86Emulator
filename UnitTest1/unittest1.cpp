@@ -74,5 +74,10 @@ namespace UnitTest1
 		{
 			testCreate("../testAsm/while-test.bin", 0x7c00);
 		}
+
+		TEST_METHOD(TestMethod9)
+		{
+			testCreate("../testAsm/out.bin", 0x7c00);
+		}
 	};
 }
