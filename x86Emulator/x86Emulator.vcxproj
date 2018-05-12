@@ -149,6 +149,7 @@
     <ClInclude Include="Eflags.hpp" />
     <ClInclude Include="Emulator.hpp" />
     <ClInclude Include="Instructions.hpp" />
+    <ClInclude Include="IO.hpp" />
     <ClInclude Include="Memory.hpp" />
     <ClInclude Include="ModRM.hpp" />
     <ClInclude Include="Registers.hpp" />

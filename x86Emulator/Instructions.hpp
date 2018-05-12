@@ -1,6 +1,7 @@
 #pragma once
 #include "Container.hpp"
 #include "ModRM.hpp"
+#include "IO.hpp"
 #include <string>
 
 namespace x86 {
@@ -197,6 +198,20 @@ namespace x86 {
 			int diff = (eflags.get<Eflags::zero_flag>() || (eflags.get<Eflags::sign_flag>() != eflags.get<Eflags::overflow_flag>()))
 				? container.GetCodeFetch().getSignCode8(1) : 0;
 			container.GetCodeFetch().addEip(diff + 2);
+		}
+		
+		void in_al_dx(Container& container) {
+			uint16_t address = container.GetRegisters().get_register32(Registers::EDX) & 0xffff;
+			uint8_t value = io::io_in8(address);
+			container.GetRegisters().set_register8(Registers::AL, value);
+			container.GetCodeFetch().addEip(1);
+		}
+
+		void out_dx_al(Container& container) {
+			uint16_t address = container.GetRegisters().get_register32(Registers::EDX) & 0xffff;
+			uint8_t value = container.GetRegisters().get_register8(Registers::AL);
+			io::io_out8(address, value);
+			container.GetCodeFetch().addEip(1);
 		}
 
 	};
