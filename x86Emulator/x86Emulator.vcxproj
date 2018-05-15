@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bios.hpp" />
     <ClInclude Include="CodeExecute.hpp" />
     <ClInclude Include="CodeFetch.hpp" />
     <ClInclude Include="Container.hpp" />
