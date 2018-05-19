@@ -45,6 +45,7 @@ namespace x86 {
 			instructions[0x7E] = Instructions::jle;
 			instructions[0xEC] = Instructions::in_al_dx;
 			instructions[0xEE] = Instructions::out_dx_al;
+			instructions[0xCD] = Instructions::swi;
 
 			for (size_t i = 0; i < 8; i++) {
 				instructions[0xB0 + i] = Instructions::mov_r8_imm8;

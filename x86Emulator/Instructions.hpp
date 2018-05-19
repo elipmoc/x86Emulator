@@ -2,7 +2,10 @@
 #include "Container.hpp"
 #include "ModRM.hpp"
 #include "IO.hpp"
+#include "Bios.hpp"
 #include <string>
+#include <iomanip>
+
 
 namespace x86 {
 	namespace Instructions{
@@ -252,6 +255,18 @@ namespace x86 {
 			uint8_t value = container.GetRegisters().get_register8(Registers::AL);
 			io::io_out8(address, value);
 			container.GetCodeFetch().addEip(1);
+		}
+
+		void swi(Container& container) {
+			uint8_t int_index = container.GetCodeFetch().getCode8(1);
+			container.GetCodeFetch().addEip(2);
+			switch (int_index) {
+			case 0x10:
+				Bios::bios_video(container.GetRegisters());
+				break;
+			default:
+				std::wcerr << "unknown interrupt 0x" << std::setfill(L'0') << std::setw(2) << std::hex << int_index << std::endl;
+			}
 		}
 
 	};
